@@ -13,7 +13,7 @@ $dest = $defaultgateway,'8.8.8.8','vc.itgen.io'
 for ($i = 0; $i -lt 10000; $i++){
 $proberesult = ""
 foreach ( $d in $dest){
-$proberesult += (ping.exe -t $d -a -n 1 | findstr "TTL failure out" | Foreach{"{0}: {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),$_}) +  "`n"
+$proberesult += (ping.exe -t $d -a -n 1 | findstr "TTL failure out превышен ошибка" | Foreach{"{0}: {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),$_}) +  "`n"
 }
 $proberesult += "---" 
 echo $proberesult 
