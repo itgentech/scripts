@@ -13,11 +13,11 @@ $dest = $defaultgateway,'8.8.8.8','vc.itgen.io'
 for ($i = 0; $i -lt 10000; $i++){
 $proberesult = ""
 foreach ( $d in $dest){
-$proberesult += (ping.exe -t $d -a -n 1 | findstr "TTL failure out превышен ошибка" | Foreach{"{0}: {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),$_}) +  "`n"
+$proberesult += "{0}: Ping {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),(ping.exe -t $d -a -n 1 | findstr "TTL Unknown unreachable error out Превышен недоступен ошибка сбой узел") +  "`n"
 }
 $proberesult += "---" 
 echo $proberesult 
 echo $proberesult >> $file
 Start-Sleep 1
 }}
-catch { echo "`nThis output will be saved to $file`n" } 
+catch { $_ } 
