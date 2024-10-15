@@ -1,0 +1,23 @@
+try { $timestampformat = "yyyy-MM-ddTHH:mm:ssK"
+$dir = [Environment]::GetFolderPath("MyDocuments") + "\itgentech\"
+New-Item -ItemType Directory -Force -Path $dir | Out-Null
+$file = "{0}{1}-{2}{3}" -f $dir, "pingresults", (Get-Date -Format $timestampformat).Replace(':', ''), ".txt"
+echo "`nThis output will be saved to $file`n"
+$defaultgateway = (Get-wmiObject Win32_networkAdapterConfiguration | ?{$_.IPEnabled}).DefaultIPGateway
+
+ipconfig >> $file
+
+echo "`nStart pinging...`n" >> $file
+
+$dest = $defaultgateway,'8.8.8.8','vc.itgen.io'
+for ($i = 0; $i -lt 10000; $i++){
+$proberesult = ""
+foreach ( $d in $dest){
+$proberesult += (ping.exe -t $d -a -n 1 | findstr "TTL failure out" | Foreach{"{0}: {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),$_}) +  "`n"
+}
+$proberesult += "---" 
+echo $proberesult 
+echo $proberesult >> $file
+Start-Sleep 1
+}}
+catch { echo "`nThis output will be saved to $file`n" } 
