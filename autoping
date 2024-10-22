@@ -12,7 +12,7 @@ $dest = $defaultgateway + ('8.8.8.8','vc.itgen.io')
 for ($i = 0; $i -lt 10000; $i++){
 $proberesult = ""
 foreach ( $d in $dest){
-$proberesult += "{0}: Ping {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),(ping.exe -t $d -a -n 1 | findstr /I  "TTL Unknown error out host Превышен недоступен ошибка сбой узел") +  "`n"
+$proberesult += "{0}: Ping {1}: {2}" -f (Get-Date -Format $timestampformat),($d -join ''),(ping.exe -t $d -a -n 1 | Select-String -Pattern @('TTL', 'Unknown', 'error', 'out', 'host', 'Превышен', 'недоступен', 'ошибка', 'сбой', 'узел')) +  "`n"
 }
 $proberesult += "---" 
 echo $proberesult 
