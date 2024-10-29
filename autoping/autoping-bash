@@ -8,6 +8,19 @@ then
   abort "Bash is required to interpret this script."
 fi
 
+if [[ $OSTYPE == *"linux"* ]]; then
+
+    DEFAULT_ROUTE=$(ip route show default | awk '/default/ {print $3}')
+    PING_ATRIBUTES="-O -c 1"
+
+else 
+    # Assuming we are on mac. We check ipv4 only.
+    DEFAULT_ROUTE=$(netstat -nr -f inet | awk '/default/ {print $2}')
+
+    # The ping '-O' option does not exist on mac.
+    PING_ATRIBUTES="-c 1"
+fi
+
 # Set directory and filepath where output will be saved.
 DIRECTORY="$HOME/Documents/itgentech"
 FILE_PATH="$DIRECTORY/pingresults-$(date -Iseconds).txt"
@@ -15,9 +28,6 @@ FILE_PATH="$DIRECTORY/pingresults-$(date -Iseconds).txt"
 # Remove colums from the filepath, bc otherwise there will be 
 # troubles opening it on Win later.
 FILE_PATH=${FILE_PATH//:}
-
-# Get the default route (aka router).
-DEFAULT_ROUTE=$(ip route show default | awk '/default/ {print $3}')
 
 # Create the directory and file
 mkdir -p $DIRECTORY
@@ -34,12 +44,6 @@ for i in $(seq 1 10000); do
 
     for t in ${NODES_TO_PING[@]}; do
 
-        if [[ $OSTYPE == *"linux"* ]]; then
-            PING_ATRIBUTES="-O -c 1"
-        else 
-            # Assuming we are on mac. The ping '-O' option does not exist on mac.
-            PING_ATRIBUTES="-c 1"
-        fi
 
         PROBE_RESULT="${PROBE_RESULT}$(date -Iseconds):$(ping $PING_ATRIBUTES $t | 
             awk '/^---/ { exit } NR > 1 && !/^$/ { print " "$0 }')\n"
