@@ -48,5 +48,5 @@ for i in $(seq 1 10000); do
     echo -e $PROBE_RESULT
     echo -e $PROBE_RESULT >> $FILE_PATH
 
-sleep 1s
+sleep 1
 done
