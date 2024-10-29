@@ -35,13 +35,14 @@ for i in $(seq 1 10000); do
     for t in ${NODES_TO_PING[@]}; do
 
         if [[ $OSTYPE == *"linux"* ]]; then
-            PROBE_RESULT="${PROBE_RESULT}$(ping -O -c 1 $t | 
-            awk '/^---/ { exit } NR > 1 && !/^$/ { print strftime("%F %T")" "$0 }')\n"
+            PING_ATRIBUTES="-O -c 1"
         else 
             # Assuming we are on mac. The ping '-O' option does not exist on mac.
-            PROBE_RESULT="${PROBE_RESULT}$(ping -c 1 $t | 
-            awk '/^---/ { exit } NR > 1 && !/^$/ { print strftime("%F %T")" "$0 }')\n"
+            PING_ATRIBUTES="-c 1"
         fi
+
+        PROBE_RESULT="${PROBE_RESULT}$(date -Iseconds):$(ping $PING_ATRIBUTES $t | 
+            awk '/^---/ { exit } NR > 1 && !/^$/ { print " "$0 }')\n"
 
     done;
 
