@@ -1,0 +1,38 @@
+#!/bin/bash
+
+# Set directory and filepath where output will be saved.
+DIRECTORY="$HOME/Documents/itgentech"
+FILE_PATH="$DIRECTORY/pingresults-$(date -Iseconds).txt"
+
+# Remove colums from the filepath, bc otherwise there will be 
+# troubles opening it on Win later.
+FILE_PATH=${FILE_PATH//:}
+
+# Get the default route (aka router).
+DEFAULT_ROUTE=$(ip route show default | awk '/default/ {print $3}')
+
+# Create the directory and file
+mkdir -p $DIRECTORY
+touch $FILE_PATH
+
+echo "This output will be saved to $FILE_PATH"
+echo ""
+
+NODES_TO_PING=($DEFAULT_ROUTE 8.8.8.8 vc.itgen.io)
+
+for i in $(seq 1 10000); do
+
+    PROBE_RESULT=""
+
+    for t in ${NODES_TO_PING[@]}; do
+
+        PROBE_RESULT="${PROBE_RESULT}$(ping -O -c 1 $t | 
+        awk '/^---/ { exit } NR > 1 && !/^$/ { print strftime("%F %T")" "$0 }')\n"
+
+    done;
+
+    echo -e $PROBE_RESULT
+    echo -e $PROBE_RESULT >> $FILE_PATH
+
+sleep 1s
+done
