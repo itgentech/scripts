@@ -1,0 +1,28 @@
+try { 
+$counters = "\Processor(*)\% Processor Time",
+	"\Processor Information(*)\% Performance Limit",
+	"\Processor Information(*)\Processor Frequency",
+	"\Processor Performance(*)\Processor Frequency",
+	"\Processor Performance(*)\% of Maximum Frequency",
+	"\GPU Engine(*)\Utilization Percentage",
+	"\Network Adapter(*)\Bytes Sent/sec",
+	"\Network Interface(*)\Bytes Received/sec"
+
+$baseFilePath = [Environment]::GetFolderPath("MyDocuments") + "\itgentech\"
+New-Item -ItemType Directory -Force -Path $baseFilePath | Out-Null
+
+$counterName = 0
+foreach ( $counter in $counters )
+{
+	echo "$counter"
+	$outputFile = $baseFilePath + [string]$counterName + "-" + $(Get-Date).ToUniversalTime().ToString("yyyy-MM-ddTHHmmss.fffK")
+
+	logman create counter $counterName -c "$counter" -o $outputFile -max 10 -rf 10:00
+	logman start -n $counterName
+	echo ""
+	$counterName++
+}
+echo ""
+logman query
+} catch { $_ }
+
